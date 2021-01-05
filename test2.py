@@ -1,8 +1,5 @@
-#just checking if github works
-
 #Sauce: https://github.com/dataprofessor/code/blob/master/python/linear_regression.ipynb
 #Sauce2: https://github.com/vasukapil2015/Walmart-Store-Sales-Forecasting/blob/main/Walmart_Store_Sales_Forecasting.ipynb
-
 #Προσπάθησα να συνδυάσω ένα πίο απλό παράδειγμα εκπαίδευσης linear regression 
 #https://www.youtube.com/watch?v=R15LjD8aCzc
 #Και της εργασίας που βρήκαμε που μοιάζει ή είναι η ίδια με τη δική μας προκειμένου να την
@@ -13,22 +10,52 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Βάλε στη μεταβλητή train το αρχείο train.csv
+# <------------------------------------------------------->
+# <--             ΕΠΕΞΕΡΓΑΣΙΑ ΑΡΧΕΙΩΝ CSV               -->
+# <------------------------------------------------------->
+
 #kanoume eisagwgh twn arxeiwn  twn dedomenwn mas
 train = pd.read_csv('train.csv')
 features = pd.read_csv('features.csv')
 
 
-#emfanizoume ta dedomena mas wwww
+#emfanizoume ta dedomena mas 
 print('Features : ', features.shape)
 print('Train    : ', train.shape)
 
-#Κάνε import και το αρχείο features και κάντα merge ώστε να έχουμε σε ένα αρχείο όλες τις
-#πληροφορίες που χρειαζόμαστε
+#elegxos kenwn metavlhtwn sta dedomena mas
+features.isnull().sum()
 
-#βάλε όλες τις στήλες εκτός του weekly sales ως X variables σε ένα matrix
-#βάλε την στήλη weekly sale ως Y variable σε ένα άλλο matrix αφού αυτή είναι η εξαρτημένη
-#μεταβλητή που θέλουμε να προβλέψουμε 
+#symplirwsi kenwn metavlhtwn sta dedomena mas me ton antistoixo meso oro ths metavlhths opou uparxoun ta kena
+features['Unemployment'] = features['Unemployment'].fillna(np.mean(features['Unemployment'] ))
+
+#elegxos kai epalitheusi gia mh mhdenika stoixeia
+features.isnull().sum() 
+
+
+
+#Κάνε merge το αρχείο features με το train ώστε να έχουμε σε ένα αρχείο όλες τις
+#πληροφορίες που χρειαζόμαστε
+#sygxwneush twn duo mhtrwwn kai emfanisi tou eniaiou
+print(features.columns)
+print(features.shape)
+
+print(train.columns)
+print(train.shape)
+print(df.shape)
+
+df.head()
+
+# <------------------------------------------------------->
+# <--                ΠΑΛΙΝΔΡΟΜΗΣΗ                       -->
+# <------------------------------------------------------->
+
+
+
+
+#not done     #βάλε όλες τις στήλες εκτός του weekly sales ως X variables σε ένα matrix
+              #βάλε την στήλη weekly sale ως Y variable σε ένα άλλο matrix αφού αυτή είναι η εξαρτημένη
+              #μεταβλητή που θέλουμε να προβλέψουμε 
 
 #το sklearn μας χρειάζεται για το linear regression
 
@@ -38,6 +65,11 @@ from sklearn.metrics import mean_squared_error, r2_score
 #φτιάξε το μοντέλο με τα X,Y matrixes που ορίσαμε παραπάνω
 model = linear_model.LinearRegression()
 model.fit(X_train, Y_train)
+
+# <------------------------------------------------------->
+# <--                 ΟΠΤΙΚΟΠΟΙΗΣΗ                      -->
+# <------------------------------------------------------->
+
 
 #Σε αυτό το σημείο θα πρέπει να είμαστε σε θέση να προβλέψουμε τις επόμενες πωλήσεις
 #Αυτό μπορούμε να το κάνουμε ετοιμάζοντας ένα νέο matrix Χ με τις τιμές που έχουμε από

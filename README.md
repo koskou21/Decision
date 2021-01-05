@@ -1,6 +1,7 @@
 # Decision
 Project Θεωρίας Αποφάσεων 
 
+Google docs: https://docs.google.com/document/d/1ORo4_fFs0pxn0kKYUU6TDZBJuxRxGSyW5HdWeJ7716E/edit
 
 Συνδέστε το vscode με το repository:
 
