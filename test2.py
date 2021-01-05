@@ -1,3 +1,5 @@
+#just checking if github works
+
 #Sauce: https://github.com/dataprofessor/code/blob/master/python/linear_regression.ipynb
 #Sauce2: https://github.com/vasukapil2015/Walmart-Store-Sales-Forecasting/blob/main/Walmart_Store_Sales_Forecasting.ipynb
 
