@@ -57,6 +57,9 @@ df.head()
               #βάλε την στήλη weekly sale ως Y variable σε ένα άλλο matrix αφού αυτή είναι η εξαρτημένη
               #μεταβλητή που θέλουμε να προβλέψουμε 
 
+              #για το πως θα γινει μαλλον τσεκαρε στο github του ινδου
+              #Feature Selection [68]
+
 #το sklearn μας χρειάζεται για το linear regression
 
 from sklearn import linear_model
