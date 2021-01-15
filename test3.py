@@ -5,6 +5,7 @@ from sklearn import linear_model
 from sklearn.utils import shuffle
 import math
 import matplotlib.pyplot as plt
+import datetime 
 
 #bale sto data to arxeio train (h opoio allo arxeio nomizoume)
 train_data = pd.read_csv("train.csv")
@@ -39,16 +40,32 @@ feat_data['Unemployment'] = feat_data['Unemployment'].fillna(np.mean(feat_data['
 
 print("Checking for missing values features")
 print(feat_data.isnull().sum())
+
+#diegrapse to Date pedio apo to arxeio features 
+#Ta date formats se kathe arxeio einai diaforetika opote tha kratisoume 
+#Ta Dates apo to arxxeio train poy einai kai perissotera
+
+feat = feat_data['Date']
+print("printing feat")
+print(feat.head())
+dad=''
+
+for i in feat:
+    dad = datetime.datetime.strptime(i, '%d/%m/%y' )
+    print("i is: ",dad)
+
+
+
 # Merge feature and training data
-new_df = pd.merge(feat_data, train_data,  on = ['Store', 'Date', 'IsHoliday'], how = 'inner')
+""" new_df = pd.merge(feat_data, train_data, on = ['Store', 'IsHoliday'], how = 'inner')
 
 
 
-print("Checking for missing values features")
+print("Checking for missing values new_df")
 print(new_df.isnull().sum())
 print("printing merged data")
 print(new_df.shape)
-print(new_df.head())
+print(new_df.head()) """
 
 
 
