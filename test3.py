@@ -45,14 +45,19 @@ print(feat_data.isnull().sum())
 #Ta date formats se kathe arxeio einai diaforetika opote tha kratisoume 
 #Ta Dates apo to arxxeio train poy einai kai perissotera
 
-feat = feat_data['Date']
-print("printing feat")
-print(feat.head())
-dad=''
 
-for i in feat:
-    dad = datetime.datetime.strptime(i, '%d/%m/%y' )
-    print("i is: ",dad)
+print(feat_data.head())
+
+feat_data['Date'] = pd.to_datetime(feat_data.Date)
+
+print(feat_data.head())
+#print(feat_data.Date.dt.month)
+print(feat_data.dtypes)
+print("end")
+
+
+
+
 
 
 
