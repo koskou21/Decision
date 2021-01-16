@@ -153,7 +153,7 @@ test_data = pd.merge(feat_data, test, on = ['Store', 'Date', 'IsHoliday'], how =
 
 print("-----Checking for missing values test_data------")
 print(test_data.isnull().sum())
-print("-----------test_data shape and head(10)---------")
+print("-----------test_data shape and head(10)--------")
 print(test_data.shape)
 print(test_data.head(10))
 
