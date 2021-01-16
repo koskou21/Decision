@@ -6,6 +6,7 @@ from sklearn.utils import shuffle
 import math
 import matplotlib.pyplot as plt
 import datetime 
+import seaborn as sns
 
 
 
@@ -111,9 +112,9 @@ all_data = pd.merge(feat_data, train_data, on = ['Store', 'Date', 'IsHoliday'], 
 #Check for missing values in all_data
 print("Checking for missing values all_data")
 print(all_data.isnull().sum())
-print("-----------all_data shape and head(10)---------")
+print("-----------all_data shape and tail(10)---------")
 print(all_data.shape)
-print(all_data.head(10)) 
+print(all_data.tail(10))
 
 
 
@@ -130,7 +131,7 @@ print(all_data.head(10))
 
 test = pd.read_csv("test.csv")
 
-print("-------------test_data info---------")
+print("-------------test info---------")
 print(test.head())
 print(test.dtypes) 
 print(test.isnull().sum())
@@ -141,6 +142,7 @@ print(test.isnull().sum())
 test['Date'] = pd.to_datetime(test.Date)
 
 print("-----------test head and types--------")
+print(test.shape)
 print(test.head())
 print(test.dtypes) 
 
@@ -156,6 +158,60 @@ print(test_data.isnull().sum())
 print("-----------test_data shape and head(10)--------")
 print(test_data.shape)
 print(test_data.head(10))
+
+
+
+
+# Se ayto to shmeio mporei na theloumisoume na ta kanoume etsi kai alliws sort according to date 
+# tha to lysoume an prokypsei 
+
+#print(all_data.head(20))
+
+
+""" 
+# Sort the data w.r.t 'Date' as we have time series problem
+df = df.sort_values(by = 'Date')
+df.head(20)
+ """
+
+#--------------------------------           ---------------------------
+#--------------------------------           ---------------------------
+#-------------------------------- Corelation ---------------------------
+#---------------------------------          ---- ----------------------
+#-----------------------------------        --   ----------------------
+
+
+
+
+# Total count of sales on holidays and non-holidays
+is_holiday = train_data[train_data.IsHoliday == True]
+
+count = 0
+count2 = 0
+for holiday in train_data['IsHoliday']:
+    if (holiday): count = count +1
+    else: count2 = count2 + 1
+
+print("Holidays: ",count)
+print("NotHoliday: ", count2)
+
+
+
+
+
+corr = all_data.corr()
+
+
+""" plt.figure(figsize = (15, 10))
+sns.heatmap(corr, annot = True)
+plt.plot() """
+
+
+corr.to_csv('corelation.csv')
+print(corr)
+print("debug")
+#parathroyme oti parolo pou oi Meres 
+
 
 
 
