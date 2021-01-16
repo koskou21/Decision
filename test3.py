@@ -7,25 +7,35 @@ import math
 import matplotlib.pyplot as plt
 import datetime 
 
-#bale sto data to arxeio train (h opoio allo arxeio nomizoume)
+
+
+#---------------------------------------                       -------------------------------
+#---------------------------------------                       -------------------------------
+# -------------------------------           IMPORT CSV FILES             -------------------------
+#---------------------------------------                       -------------------------------
+#---------------------------------------                       -------------------------------
+#bale sto train_data to arxeio train 
+#bale sto feat_data to arxeio features
+
 train_data = pd.read_csv("train.csv")
 feat_data = pd.read_csv("features.csv", sep=";")
 
-""" print (train_data.head())
-print (feat_data.head()) """
-
-print("info")
-print(train_data.info)
-print(feat_data.info)
 
 #elegekse ton typo twn dedomenwn ths kathe sthlhs
 print("printing data types")
 print(train_data.dtypes) 
 print(feat_data.dtypes)
 
-print("datacolumns")
-print(train_data.columns)
-print(feat_data.columns)
+
+
+#---------------------------------------                       -------------------------------
+#---------------------------------------                       -------------------------------
+#--------------------------------------- TREAT MISSING VALUES -------------------------------
+#---------------------------------------                       -------------------------------
+#---------------------------------------                       -------------------------------
+
+
+
 
 #tsekare an loipoyn kapoies times
 print("Checking for missing values")
@@ -38,39 +48,81 @@ print(feat_data.isnull().sum())
 #bazoume ton meso oro sta pedia missing
 feat_data['Unemployment'] = feat_data['Unemployment'].fillna(np.mean(feat_data['Unemployment'] ))
 
+#ksana tsekare an exei missing values
 print("Checking for missing values features")
 print(feat_data.isnull().sum())
 
-#diegrapse to Date pedio apo to arxeio features 
-#Ta date formats se kathe arxeio einai diaforetika opote tha kratisoume 
-#Ta Dates apo to arxxeio train poy einai kai perissotera
 
 
+
+
+#---------------------------------------                       -------------------------------
+#---------------------------------------                       -------------------------------
+#---------------------------            FIX DIFFERENT DATE FORMATS     -----------------------------
+#---------------------------------------                       -------------------------------
+#---------------------------------------                       -------------------------------
+
+
+#Ta arxeia features kai train exoyn diaforetika date formats
+#Prepei na einai ta idia gia na ginei swsta to merge
+#Sthn ousia metatrepoume ta Date pedia kai twn 2 apo object se datetime64[ns]
+
+#metetrepse to feat_data se datetime object
+feat_data['Date'] = pd.to_datetime(feat_data.Date, dayfirst=True)
+
+#print feat types
+print("-----------feat_data--------")
 print(feat_data.head())
-
-feat_data['Date'] = pd.to_datetime(feat_data.Date)
-
-print(feat_data.head())
-#print(feat_data.Date.dt.month)
 print(feat_data.dtypes)
-print("end")
+
+
+
+#metetrepse to train_data se datetime object
+train_data['Date'] = pd.to_datetime(train_data.Date)
+
+print("-----------train_data--------")
+print(train_data.head())
+print(train_data.dtypes) 
 
 
 
 
+#---------------------------------------                       -------------------------------
+#---------------------------------------                       -------------------------------
+#----------------------------        MERGE train_data + feat_data to df     --------------------
+#---------------------------------------                       -------------------------------
+#---------------------------------------                       -------------------------------
 
+
+
+
+print("-----------features and train shape--------")
+print(feat_data.shape)
+print(train_data.shape)
 
 
 # Merge feature and training data
-""" new_df = pd.merge(feat_data, train_data, on = ['Store', 'IsHoliday'], how = 'inner')
+df = pd.merge(feat_data, train_data, on = ['Store', 'Date', 'IsHoliday'], how = 'inner')
 
 
-
-print("Checking for missing values new_df")
-print(new_df.isnull().sum())
+#Check for missing values in df
+print("Checking for missing values df")
+print(df.isnull().sum())
 print("printing merged data")
-print(new_df.shape)
-print(new_df.head()) """
+print(df.shape)
+print(df.head()) 
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
