@@ -9,20 +9,24 @@ import datetime
 import seaborn as sns
 
 
+# Για να μην γράφουμε κάθε φορά τις παύλες στα prints
+dashes = '-'*50  
+
 
 #---------------------------------------                       -------------------------------
 #---------------------------------------                       -------------------------------
 # -------------------------------           IMPORT CSV FILES             -------------------------
 #---------------------------------------                       -------------------------------
 #---------------------------------------                       -------------------------------
-#bale sto train_data to arxeio train 
-#bale sto feat_data to arxeio features
+
+# Στο train_data έχουμε το αρχείο train.csv
+# Στο feat_data έχουμε το αρχείο features.csv
 
 train_data = pd.read_csv("train.csv")
 feat_data = pd.read_csv("features.csv", sep=";")
 
+# Έλεγχος του τύπου δεδομένων κάθε στήλης
 
-#elegekse ton typo twn dedomenwn ths kathe sthlhs
 print("printing data types")
 print(train_data.dtypes) 
 print(feat_data.dtypes)
@@ -38,20 +42,25 @@ print(feat_data.dtypes)
 
 
 
-#tsekare an loipoyn kapoies times
+# Έλεγχος για τιμές που λείπουν 
+
 print("Checking for missing values")
 print(train_data.isnull().sum())
 print("Checking for missing values features")
 print(feat_data.isnull().sum())
 
 
-#to unemployment exei missing values
-#bazoume ton meso oro sta pedia missing
+# Η στήλη unemployment έχει κάποιες τιμές που λείπουν 
+# Αντικαθιστούμε αυτά τα πεδία με τον μέσο όρο 
+
 feat_data['Unemployment'] = feat_data['Unemployment'].fillna(np.mean(feat_data['Unemployment'] ))
 
-#ksana tsekare an exei missing values
+# Έλεγχος για τιμές που λείπουν
+
 print("Checking for missing values features")
 print(feat_data.isnull().sum())
+
+# Δεν λέιπουν τιμές 
 
 
 
@@ -64,27 +73,27 @@ print(feat_data.isnull().sum())
 #---------------------------------------                       -------------------------------
 
 
-#Ta arxeia features kai train exoyn diaforetika date formats
-#Prepei na einai ta idia gia na ginei swsta to merge
-#Metatrepoume ta Date pedia kai twn 2 apo object se datetime64[ns]
+# Τα αρχέια features και train έχουν διαφορετικά date formats 5/2/10 2010-02-05
+# Τα date formats πρέπει να είναι τα ίδια για να γίνει σωστά το inner join παρακάτω
+# Παρακάτω μετατρέπουμε τα πεδία Date και στα δύο αρχεία από object se datetime64[ns]
 
-#metetrepse to feat_data se datetime object
-#to dayfirst=True epeidh xwris ayto to datetime metatrepei tis hmeromhnies sto amerikaniko format 
-#enw to test ta exei sto eyrwpaiko format 
 
+# feat_data
+
+# dayfirst=True γιατί τα θέλουμε και τα δύο στο ευρωπαικό format (η datetime κάνει default στο αμερικάνικο και μας δημιουργεί προβλήματα)
 feat_data['Date'] = pd.to_datetime(feat_data.Date, dayfirst=True)
 
-#print feat types
-print("-----------feat_data--------")
+print(dashes,"feat_data",dashes)
 print(feat_data.head())
 print(feat_data.dtypes)
 
 
 
-#metetrepse to train_data se datetime object
+# train_data 
+
 train_data['Date'] = pd.to_datetime(train_data.Date)
 
-print("-----------train_data--------")
+print(dashes,"train_data",dashes)
 print(train_data.head())
 print(train_data.dtypes) 
 
@@ -98,9 +107,9 @@ print(train_data.dtypes)
 #---------------------------------------                                         -------------------------------
 
 
+# Χρειαζόμαστε όλες τις στήλες των train_data + feat_data σε ένα για να χτίσουμε το μοντέλο
 
-
-print("-----------features and train shape--------")
+print(dashes,"features and train shape",dashes)
 print(feat_data.shape)
 print(train_data.shape)
 
@@ -110,9 +119,9 @@ all_data = pd.merge(feat_data, train_data, on = ['Store', 'Date', 'IsHoliday'], 
 
 
 #Check for missing values in all_data
-print("Checking for missing values all_data")
+print(dashes,"Checking for missing values all_data",dashes)
 print(all_data.isnull().sum())
-print("-----------all_data shape and tail(10)---------")
+print(dashes,"all_data shape and tail(10)",dashes)
 print(all_data.shape)
 print(all_data.tail(10))
 
@@ -125,23 +134,23 @@ print(all_data.tail(10))
 #---------------------------------------                                         -------------------------------
 
 
-#to test_data (train.csv) periexei ~10.000 poy aferesame apo to telos toy train.csv (sort by date)
-#gia na sygkrinoume tis problepseis mas me ta dedomena poy exoyme
+# Τo test_data (train.csv) περιέχει τις ~10.000 τελευταίες γραμμές (sort by date) του train.csv 
+# Αυτό το κάνουμε για να μπορούμε να συγκρίνουμε τις προβλέψεις μας με τα δεδομένα που έχουμε 
 
 
 test = pd.read_csv("test.csv")
 
-print("-------------test info---------")
+print(dashes,'test info',dashes)
 print(test.head())
 print(test.dtypes) 
 print(test.isnull().sum())
 
 
-#kane th steilh dates kai toy arxeioy test datetime64[ns] gia ton idio logo poy anaferame parapanw
+# Κάνε τη στήλη dates και του αρχείου test.csv datetime64[ns] για τον ίδο λόγο που αναφέραμε παραπάνω 
 
 test['Date'] = pd.to_datetime(test.Date)
 
-print("-----------test head and types--------")
+print(dashes,"test head and types",dashes)
 print(test.shape)
 print(test.head())
 print(test.dtypes) 
@@ -153,9 +162,9 @@ test_data = pd.merge(feat_data, test, on = ['Store', 'Date', 'IsHoliday'], how =
 
 
 
-print("-----Checking for missing values test_data------")
+print(dashes,"Checking for missing values test_data",dashes)
 print(test_data.isnull().sum())
-print("-----------test_data shape and head(10)--------")
+print(dashes,"test_data shape and head(10)",dashes)
 print(test_data.shape)
 print(test_data.head(10))
 
@@ -174,11 +183,14 @@ df = df.sort_values(by = 'Date')
 df.head(20)
  """
 
-#--------------------------------           ---------------------------
-#--------------------------------           ---------------------------
-#-------------------------------- Corelation ---------------------------
-#---------------------------------          ---- ----------------------
-#-----------------------------------        --   ----------------------
+#-------------------------------------------------------------------------------------------------
+#--------------------------------                                      ---------------------------
+#--------------------------------       Corelation+Outliers             ---------------------------
+#-------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------
+
+
+#          Όλα τα plots είναι μέσα σε comments για να μην καθυστερεί η εκτέλεση του προγράμματος 
 
 
 
@@ -197,20 +209,102 @@ print("NotHoliday: ", count2)
 
 
 
+# Θέλουμε να δούμε τη συσχέτιση μεταξύ των μεταβλητών.Παρακάτω το δείχνουμε με τη βοήθεια ενός heatmap
+# Θέλουμε επίσης να δούμε αν υπάρχουν μεταβλητές οι οποίες έχουν τεράστια συσχέτιση μεταξύ τους, π.χ. 0.9
+# Αν υπάρχουν τέτοιες μεταβλητές τότε αυτό σημαίνει ότι ουσιαστικά είναι "ίδιες" ως προς το πως επηρεάζουν την πρόβλεψη.
+# Αυτό σημαίνει ότι δεν θα μπορούμε να ξεχωρίσουμε το αντίκτυπο της μίας από την άλλη στο μοντέλο και σε αυη την περίπτωση θα πρέπει να το ανιτμετοπίσουμε
+# Πριν προχωρίσουμε 
+
 
 
 corr = all_data.corr()
 
-
 """ plt.figure(figsize = (15, 10))
-sns.heatmap(corr, annot = True)
-plt.plot() """
+sns.heatmap(corr, annot = True, cmap="RdBu")
+#plt.show()  """
 
 
-corr.to_csv('corelation.csv')
-print(corr)
-print("debug")
-#parathroyme oti parolo pou oi Meres 
+
+
+
+#Με τη βοήθεια του heatmap βλέπουμε ότι δεν αντιμετοπίζουμε τέτοια προβλήματα
+#corr.to_csv('corelation.csv')  #δεν θα το ξαναχρειαστούμε μάλλον αλλά το αφήνω 
+
+# Ένα άλλο πρόβλημα που μπορεί να αντιμετοπίσουμε είναι να έχουμε αρνητικές τιμές στην μεταβλητή y που θέλουμε να προβλέψουμε
+# Σε αυτή την περίπτωση αντικαθιστούμε αυτές τις τιμές με 0
+
+
+
+
+""" sns.displot(all_data.Weekly_Sales)
+plt.show()
+print(all_data.loc[all_data.Weekly_Sales < 0, 'Weekly_Sales']) """
+
+# Φαίνεται ότι όντως έχουμε αρνητικές τιμές
+# Τις αντικαθιστούμε με 0
+
+
+
+all_data.loc[all_data.Weekly_Sales < 0, 'Weekly_Sales'] = 0
+
+
+""" sns.displot(all_data.Weekly_Sales)
+plt.show()
+print(all_data.loc[all_data.Weekly_Sales < 0, 'Weekly_Sales'].count())
+ """
+
+
+
+
+
+
+#-------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------
+#---------------------------       LINEAR REGRESSION        --------------------------------------
+#-------------------------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+# Import the required library
+from sklearn.model_selection import train_test_split
+
+#X columns
+X_columns =  all_data.columns.difference(['Weekly_Sales'])
+print(X_columns)
+
+#train-test split
+X_train,X_test,y_train,y_test = train_test_split( all_data[X_columns], all_data['Weekly_Sales'], test_size = 0.20, random_state = 0)
+
+print(dashes, "X+y variables", dashes)
+print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
+print(X_train.columns)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
