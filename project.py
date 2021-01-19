@@ -230,10 +230,10 @@ print("NotHoliday: ", count2)
 
 
 corr = all_data.corr()
-
-""" plt.figure(figsize = (15, 10))
+""" 
+plt.figure(figsize = (15, 10))
 sns.heatmap(corr, annot = True, cmap="RdBu")
-#plt.show()  """
+plt.show() """ 
 
 
 
@@ -244,13 +244,14 @@ sns.heatmap(corr, annot = True, cmap="RdBu")
 
 # Ένα άλλο πρόβλημα που μπορεί να αντιμετοπίσουμε είναι να έχουμε αρνητικές τιμές στην μεταβλητή y που θέλουμε να προβλέψουμε
 # Σε αυτή την περίπτωση αντικαθιστούμε αυτές τις τιμές με 0
+# Εναλλακτικά θα μπορούσαμε να διαγράψουμε αυτές τις γραμμες
 
 
 
 
 """ sns.displot(all_data.Weekly_Sales)
 plt.show()
-print(all_data.loc[all_data.Weekly_Sales < 0, 'Weekly_Sales']) """
+print(all_data.loc[all_data.Weekly_Sales < 0, 'Weekly_Sales'])  """
 
 # Φαίνεται ότι όντως έχουμε αρνητικές τιμές
 # Τις αντικαθιστούμε με 0
@@ -269,6 +270,40 @@ print(all_data.loc[all_data.Weekly_Sales < 0, 'Weekly_Sales'].count())
 
 
 
+#----------------------------------------- Fix dates again --------------------------------------
+
+
+
+all_data['Year'] = pd.to_datetime(all_data['Date'], format = '%Y-%m-%d').dt.year
+test_data['Year'] = pd.to_datetime(test_data['Date'], format = '%Y-%m-%d').dt.year
+
+""" all_data['Month'] = pd.to_datetime(all_data['Date'], format = '%Y-%m-%d').dt.month
+test_data['Month'] = pd.to_datetime(test_data['Date'], format = '%Y-%m-%d').dt.month """
+
+
+all_data['Day'] = pd.to_datetime(all_data['Date'], format = '%Y-%m-%d').dt.day
+test_data['Day'] = pd.to_datetime(test_data['Date'], format = '%Y-%m-%d').dt.day
+
+# Add column for days to next christmas for Training
+all_data["Days2Christmas"] = (pd.to_datetime(all_data['Year'].astype(str)+ "-12-31", format="%Y-%m-%d") -pd.to_datetime(all_data["Date"], format="%Y-%m-%d")).dt.days.astype(int)
+
+# testing
+test_data["Days2Christmas"] = (pd.to_datetime(test_data['Year'].astype(str) + "-12-31", format="%Y-%m-%d") - pd.to_datetime(test_data["Date"], format="%Y-%m-%d")).dt.days.astype(int)
+
+
+
+
+
+print(dashes,dashes)
+print(all_data.head())
+print(dashes,dashes)
+print(test_data.head())
+
+
+
+
+
+
 
 #-------------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------------
@@ -278,24 +313,104 @@ print(all_data.loc[all_data.Weekly_Sales < 0, 'Weekly_Sales'].count())
 
 
 
+# entopisa ena problhma poy den tha mas afhsei na kanoume linear regression
+# h linreg den dexetai datetime objects !!!!!
+# tha prepei na tsekaroume thn paragrafo
+# Extracting new Dates, Years and holidays columns for train and test data¶
+# toy vasukapil kai na baloume mia sthlh gia Day-Month-Year ksexwrista
+# isws tha mporoysame na to kanoume ekei poy allazoume tis hmeromhnies se datetime objects
+# h prin ftiaxoume tis X,y variables
 
 
 
 
+select_columns = all_data.columns.difference(['Weekly_Sales', 'Date'])
 
-# Import the required library
+print(dashes,'check',dashes)
+print(all_data.head())
+
+
+
 from sklearn.model_selection import train_test_split
 
-#X columns
-X_columns =  all_data.columns.difference(['Weekly_Sales'])
-print(X_columns)
 
 #train-test split
-X_train,X_test,y_train,y_test = train_test_split( all_data[X_columns], all_data['Weekly_Sales'], test_size = 0.20, random_state = 0)
+X_train,X_test,y_train,y_test = train_test_split( all_data[select_columns], all_data['Weekly_Sales'], test_size = 0.20, random_state = 0)
 
-print(dashes, "X+y variables", dashes)
+
+
+
+
+
 print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
-print(X_train.columns)
+
+from sklearn.preprocessing import StandardScaler
+sc_X = StandardScaler()
+X_train = sc_X.fit_transform(X_train)
+X_test = sc_X.transform(X_test)
+
+
+
+# Standardize with the test file data
+test_data_sc = sc_X.fit_transform(test_data[select_columns])
+
+print('debug')
+
+print(dashes,dashes)
+print(X_train)
+print(dashes,dashes)
+
+print(test_data_sc)
+print(dashes,dashes)
+
+print(X_test)
+
+
+
+
+from sklearn.linear_model import LinearRegression
+
+# Checking errors
+from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_squared_error
+
+# Initialize and fit the data into the model
+linreg = LinearRegression()
+linreg.fit(X_train, y_train)
+y_train_pred = linreg.predict( X_train )
+print(dashes,'print pred',dashes)
+
+print(y_train_pred)
+
+
+
+#Predicting for test
+y_test_pred = linreg.predict( X_test )
+
+all_data_test_pred = pd.DataFrame({'actual' : y_test,'Predicted' : y_test_pred})
+print(dashes,'all_data pred',dashes)
+
+print(all_data_test_pred.head(10))
+
+print(dashes,dashes)
+
+
+# Calculating Mean Absoluate Error
+print(dashes,dashes)
+
+print('Train MAE : ', mean_absolute_error(y_train, y_train_pred).round(2))
+print('Test MAE  : ', mean_absolute_error(y_test, y_test_pred).round(2))
+
+# Calculate Root Mean Squared Error
+print(dashes,dashes)
+
+print('Train RMSE : ', np.sqrt(mean_squared_error(y_train, y_train_pred)).round(2))
+print('Test  RMSE : ', np.sqrt(mean_squared_error(y_test, y_test_pred)).round(2))
+
+accuracy = np.round(linreg.score( X_test, y_test) * 100, 3)
+print(dashes,dashes)
+
+print('Linear Regression Accuracy : ', accuracy )
 
 
 
@@ -305,63 +420,3 @@ print(X_train.columns)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#Set index to the data column
-""" data.index = pd.to_datetime(data['Date'])
-print (data.head())
-
-#Diegrapse th deyterh sthlh date 
-data  = data.drop(['Date'], axis = 1)
-print (data.head()) """
-
-
-
-
-
-#den fainetai na mas leipoun kapoia values
-#logika ayto tha allaksei otan kanoyme merge kai to features.csv
-
-#orise tis x,y metablhtes (y ayto poy theloume na problepsoume)
-
-
-
-""" plt.plot(x, y, 'x', color='blue', alpha=0.5)
-plt.xlabel("Date")
-plt.ylabel("Sales")
-plt.show()
-
- """
-
-
-
-
-""" predict = "Weekly_Sales"
-
-X = np.array(data.drop([predict], 1))
-y = np.array(data[predict])
- 
-print (X)
-print("tell me y!")
-print (y)
-
-x_train, y_train, x_test, y_test = sklearn.model_selection.train_test_split(X, y, test_size = 0.1)
-
-print("teell me y!!")
-print (y_test) """
