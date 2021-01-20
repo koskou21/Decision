@@ -453,8 +453,8 @@ gscv_rf = GridSearchCV(estimator = RandomForestRegressor(), param_grid = paragri
 
 
 
-estimators = 240
-depth = 100
+estimators = 40
+depth = 20
 
 
 
