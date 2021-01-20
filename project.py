@@ -14,9 +14,9 @@ dashes = '-'*50
 
 
 #-------------------------------------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------------------------------------
-# -------------------------------                 IMPORT CSV FILES                   -------------------------
-#-------------------------------------------------------------------------------------------------------------
+#----------------------------                                                       --------------------------
+# ---------------------------                   IMPORT CSV FILES                    -------------------------
+#----------------------------                                                       --------------------------
 #-------------------------------------------------------------------------------------------------------------
 
 # Στο train_data έχουμε το αρχείο train.csv
@@ -33,9 +33,9 @@ print(feat_data.dtypes)
 
 
 #-------------------------------------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------------------------------------
-#-------------------------------------       TREAT MISSING VALUES       --------------------------------------
-#-------------------------------------------------------------------------------------------------------------
+#----------------------------                                                       --------------------------
+#----------------------------                   TREAT MISSING VALUES                --------------------------
+#----------------------------                                                       --------------------------
 #-------------------------------------------------------------------------------------------------------------
 
 
@@ -66,9 +66,9 @@ print(feat_data.isnull().sum())
 
 
 #-------------------------------------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------------------------------------
-#---------------------------            FIX DIFFERENT DATE FORMATS     ---------------------------------------
-#-------------------------------------------------------------------------------------------------------------
+#----------------------------                                                     ----------------------------
+#---------------------------            FIX DIFFERENT DATE FORMATS                ----------------------------
+#----------------------------                                                     ----------------------------
 #-------------------------------------------------------------------------------------------------------------
 
 
@@ -103,9 +103,9 @@ print(train_data.dtypes)
 
 
 #-------------------------------------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------------------------------------
+#----------------------------                                                     ----------------------------
 #----------------------------        MERGE train_data + feat_data to all_data     ----------------------------
-#-------------------------------------------------------------------------------------------------------------
+#----------------------------                                                     ----------------------------
 #-------------------------------------------------------------------------------------------------------------
 
 
@@ -134,13 +134,14 @@ print(all_data.tail(10))
 
 
 #-------------------------------------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------------------------------------
-#----------------------------        MERGE test + feat_data to test_data     ---------------------------------
-#-------------------------------------------------------------------------------------------------------------
+#----------------------------                                                  -------------------------------
+#----------------------------        MERGE test + feat_data to test_data       -------------------------------
+#----------------------------                                                  -------------------------------
 #-------------------------------------------------------------------------------------------------------------
 
 
-
+# Χρειαζόμαστε ένα αρχείο test.csv για λόγους που εξηγούνται στην αναφορά (ελπίζω)
+# Εν συντομία, αργότερα θα ελέγξουμε την επεκταστιμότητα του αλγορίθμου που εκπαιδεύσαμε για ένα (ας πούμε) διαφορετικό dataset 
 # Τo test_data (train.csv) περιέχει τις ~10.000 τελευταίες γραμμές (sort by date) του train.csv 
 # Αυτό το κάνουμε για να μπορούμε να συγκρίνουμε τις προβλέψεις μας με τα δεδομένα που έχουμε 
 
@@ -193,11 +194,11 @@ df.head(20)
 
 
 
-#-------------------------------------------------------------------------------------------------
-#--------------------------------                                      ---------------------------
-#--------------------------------       Corelation+Outliers             ---------------------------
-#-------------------------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------------------------
+#---------------------------------------------------------------------------------------------------------
+#--------------------------------                                               --------------------------
+#--------------------------------           Plots + Handling Outliers           --------------------------
+#--------------------------------                                               --------------------------
+#---------------------------------------------------------------------------------------------------------
 
 
 #          Όλα τα plots είναι μέσα σε comments για να μην καθυστερεί η εκτέλεση του προγράμματος 
@@ -206,9 +207,10 @@ df.head(20)
 
 
 
+# Δεν είμαι σίγουρος ότι το χρειαζόμαστε, ίσως το σβήσω.
 
 # Total count of sales on holidays and non-holidays
-is_holiday = train_data[train_data.IsHoliday == True]
+""" is_holiday = train_data[train_data.IsHoliday == True]
 
 count = 0
 count2 = 0
@@ -217,33 +219,12 @@ for holiday in train_data['IsHoliday']:
     else: count2 = count2 + 1
 
 print("Holidays: ",count)
-print("NotHoliday: ", count2)
-
-
-
-# Θέλουμε να δούμε τη συσχέτιση μεταξύ των μεταβλητών.Παρακάτω το δείχνουμε με τη βοήθεια ενός heatmap
-# Θέλουμε επίσης να δούμε αν υπάρχουν μεταβλητές οι οποίες έχουν τεράστια συσχέτιση μεταξύ τους, π.χ. 0.9
-# Αν υπάρχουν τέτοιες μεταβλητές τότε αυτό σημαίνει ότι ουσιαστικά είναι "ίδιες" ως προς το πως επηρεάζουν την πρόβλεψη.
-# Αυτό σημαίνει ότι δεν θα μπορούμε να ξεχωρίσουμε το αντίκτυπο της μίας από την άλλη στο μοντέλο και σε αυη την περίπτωση θα πρέπει να το ανιτμετοπίσουμε
-# Πριν προχωρίσουμε 
-
-
-""" 
-corr = all_data.corr()
-
-plt.figure(figsize = (15, 10))
-sns.heatmap(corr, annot = True, cmap="RdBu")
-plt.show()  """
+print("NotHoliday: ", count2) """
 
 
 
 
-
-#Με τη βοήθεια του heatmap βλέπουμε ότι δεν αντιμετοπίζουμε τέτοια προβλήματα
-
-#corr.to_csv('corelation.csv')  #δεν θα το ξαναχρειαστούμε μάλλον αλλά το αφήνω 
-
-# Ένα άλλο πρόβλημα που μπορεί να αντιμετοπίσουμε είναι να έχουμε αρνητικές τιμές στην μεταβλητή y που θέλουμε να προβλέψουμε
+# Ένα πρόβλημα που μπορεί να αντιμετοπίσουμε είναι να έχουμε αρνητικές τιμές στην μεταβλητή y που θέλουμε να προβλέψουμε
 # Σε αυτή την περίπτωση αντικαθιστούμε αυτές τις τιμές με 0
 # Εναλλακτικά θα μπορούσαμε να διαγράψουμε αυτές τις γραμμες
 
@@ -269,102 +250,135 @@ print(all_data.loc[all_data.Weekly_Sales < 0, 'Weekly_Sales'].count())
 
 
 
+#-------------------------------------------------------------------------------------------------
+#--------------------------------                                       --------------------------
+#--------------------------------             Fix dates again           --------------------------
+#--------------------------------                                       --------------------------
+#-------------------------------------------------------------------------------------------------
+
+# Δυστυχώς η linreg που χρησιμοποιούμε για το linear regression δεν δέχεται datetime objects ή strings γενικότερα
+# Επομένως θα πρέπει να φτιάξουμε καινούργιες στήλες που να περιέχουν την πληροφορία που χρειαζόμαστε. 
+
+# Επιπλέον, φτιάχνουμε μία καινούργια στήλη "Days2Christmas" η οποία μετράει τις μέρες που απομένουν για τα Χριστούγεννα.
+# Περιμένουμε ότι οι πωλήσεις θα αυξηθούν όσο πλησιάζουν οι γιορτές και μάλιστα τα IsHoliday είναι μέσα σε αυτές ή προηγούνται αυτών.
 
 
-#----------------------------------------- Fix dates again --------------------------------------
 
-
-
+# Ετος
 all_data['Year'] = pd.to_datetime(all_data['Date'], format = '%Y-%m-%d').dt.year
 test_data['Year'] = pd.to_datetime(test_data['Date'], format = '%Y-%m-%d').dt.year
 
-""" all_data['Month'] = pd.to_datetime(all_data['Date'], format = '%Y-%m-%d').dt.month
-test_data['Month'] = pd.to_datetime(test_data['Date'], format = '%Y-%m-%d').dt.month """
+# Μηνας
+# Βγάλαμε αυτή τη στήλη καθώς έχει -1 correlation με το Days2Christmas
 
+#all_data['Month'] = pd.to_datetime(all_data['Date'], format = '%Y-%m-%d').dt.month
+#test_data['Month'] = pd.to_datetime(test_data['Date'], format = '%Y-%m-%d').dt.month
 
+# Ημερα
 all_data['Day'] = pd.to_datetime(all_data['Date'], format = '%Y-%m-%d').dt.day
 test_data['Day'] = pd.to_datetime(test_data['Date'], format = '%Y-%m-%d').dt.day
 
-# Add column for days to next christmas for Training
+# Στήλη για τις μέρες που απομένουν μέχρι τα επόμενα Χριστούγεννα 
 all_data["Days2Christmas"] = (pd.to_datetime(all_data['Year'].astype(str)+ "-12-31", format="%Y-%m-%d") -pd.to_datetime(all_data["Date"], format="%Y-%m-%d")).dt.days.astype(int)
 
-# testing
+# Στήλη για τις μέρες που απομένουν μέχρι τα επόμενα Χριστούγεννα 
 test_data["Days2Christmas"] = (pd.to_datetime(test_data['Year'].astype(str) + "-12-31", format="%Y-%m-%d") - pd.to_datetime(test_data["Date"], format="%Y-%m-%d")).dt.days.astype(int)
+
+
+
+
+
+# Σε αυτό το σημείο Θέλουμε να δούμε τη συσχέτιση μεταξύ των μεταβλητών.Παρακάτω το δείχνουμε με τη βοήθεια ενός heatmap
+# Θέλουμε επίσης να δούμε αν υπάρχουν μεταβλητές οι οποίες έχουν τεράστια συσχέτιση μεταξύ τους, π.χ. 0.9 (μία τέτοια συχέτιση παρατηρήσαμε μεταξύ "Month" και "Days2Christmas")
+# Αν υπάρχουν τέτοιες μεταβλητές τότε αυτό σημαίνει ότι ουσιαστικά είναι "ίδιες" ως προς το πως επηρεάζουν την πρόβλεψη.
+# Αυτό σημαίνει ότι δεν θα μπορούμε να ξεχωρίσουμε το αντίκτυπο της μίας από την άλλη στο μοντέλο και σε αυη την περίπτωση θα πρέπει να το ανιτμετοπίσουμε
+# Πριν προχωρίσουμε 
+
+
+#-------------------------                          --------------------
+#-------------------------       Correlation        --------------------
+#-------------------------                          --------------------
+
 
 
 
 
 corr = all_data.corr()
 
-#Show heatmap after days2christmas
-""" plt.figure(figsize = (15, 10))
+""" 
+plt.figure(figsize = (15, 10))
 sns.heatmap(corr, annot = True, cmap="RdBu")
 plt.show()  """
 
+
+
+# Τυπώνουμε το αποτέλεσμα σε ένα αρχείο
+# corr.to_csv('correlation.csv') 
+# Δεν θα το ξαναχρειαστούμε μάλλον αλλά το αφήνω 
+
+
+
+
+# Προσθέσαμε στήλες άρα τα ξανατυπώνουμε
 print(dashes,dashes)
 print(all_data.head())
-print(dashes,dashes)
+print(dashes,"test_data final!",dashes)
 print(test_data.head())
 
 
 
 
+#--------------------------------------------------------------------------------------------------
+#----------------------------                                --------------------------------------
+#---------------------------        Feature Selection        --------------------------------------
+#---------------------------                                 --------------------------------------
+#--------------------------------------------------------------------------------------------------
 
 
 
-#-------------------------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------------------------
-#---------------------------       LINEAR REGRESSION        --------------------------------------
-#-------------------------------------------------------------------------------------------------
-#-------------------------------------------------------------------------------------------------
 
-#KSANAFTIAKSE HEATMAP GIA TO DAYS2CHRISTMAS!!!
-#KSANAFTIAKSE HEATMAP GIA TO DAYS2CHRISTMAS!!!
-#KSANAFTIAKSE HEATMAP GIA TO DAYS2CHRISTMAS!!!
-#KSANAFTIAKSE HEATMAP GIA TO DAYS2CHRISTMAS!!!
-
-
-# entopisa ena problhma poy den tha mas afhsei na kanoume linear regression
-# h linreg den dexetai datetime objects !!!!!
-# tha prepei na tsekaroume thn paragrafo
-# Extracting new Dates, Years and holidays columns for train and test data¶
-# toy vasukapil kai na baloume mia sthlh gia Day-Month-Year ksexwrista
-# isws tha mporoysame na to kanoume ekei poy allazoume tis hmeromhnies se datetime objects
-# h prin ftiaxoume tis X,y variables
-
-
+# Διαλέγουμε ποιές στήλες θέλουμε να χρησιμοποιήσουμε για την εκπαίδευση
+# Ορίζουμε τις X,y μεταβλητές 
 
 
 select_columns = all_data.columns.difference(['Weekly_Sales', 'Date', 'Unemployment', 'Temperature'])
 
+# Για να τσεκάρουμε αν όντως έχουν μείνει οι σωστές στήλες
 print(dashes,'check',dashes)
-
 print(all_data[select_columns].head())
-
 
 
 from sklearn.model_selection import train_test_split
 
 
-#train-test split
+# Δημιουργούμε τις X,y μεταβλητές 
 X_train,X_test,y_train,y_test = train_test_split( all_data[select_columns], all_data['Weekly_Sales'], test_size = 0.20, random_state = 0)
 
-
-
-
-
-
+# Έλεγχος
 print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 
-from sklearn.preprocessing import StandardScaler
-sc_X = StandardScaler()
-X_train = sc_X.fit_transform(X_train)
-X_test = sc_X.transform(X_test)
+
+# Δημιουργία X,y μεταβλητών για το dataset που ετοιμάσαμε, δηλαδή το test.csv μέσα στο test_data
+# Δεν χρειαζόμαστε X2_train / y2_train αφόυ δεν θα εκπαιδεύσουμε τον αλγόριθμό μας με βάση αυτό το dataset, απλά θέλουμε να ελέγξουμε την επεκταστιμότητά του
+
+X2_test = test_data[select_columns]
+y2_test = test_data['Weekly_Sales']
 
 
 
-# Standardize with the test file data
-test_data_sc = sc_X.fit_transform(test_data[select_columns])
+
+
+#--------------------------------------------------------------------------------------------------
+#----------------------------                                --------------------------------------
+#---------------------------        LINEAR REGRESSION        --------------------------------------
+#---------------------------                                 --------------------------------------
+#--------------------------------------------------------------------------------------------------
+
+
+
+
+
+
 
 print('debug')
 
@@ -372,7 +386,6 @@ print(dashes,dashes)
 print(X_train)
 print(dashes,dashes)
 
-print(test_data_sc)
 print(dashes,dashes)
 
 print(X_test)
@@ -419,7 +432,7 @@ print(dashes,dashes)
 print('Train RMSE : ', np.sqrt(mean_squared_error(y_train, y_train_pred)).round(2))
 print('Test  RMSE : ', np.sqrt(mean_squared_error(y_test, y_test_pred)).round(2))
 
-accuracy = np.round(linreg.score( X_test, y_test) * 100, 3)
+accuracy = np.round(linreg.score( X_test, y_test) * 100, 2)
 print(dashes,dashes)
 
 print('Linear Regression Accuracy : ', accuracy )
@@ -437,13 +450,20 @@ print("Mean squared error =", round(sm.mean_squared_error(y_test, y_test_pred), 
 print("Median absolute error =", round(sm.median_absolute_error(y_test, y_test_pred), 2)) 
 print("Explain variance score =", round(sm.explained_variance_score(y_test, y_test_pred), 2)) 
 print("R2 score =", round(sm.r2_score(y_test, y_test_pred), 2))
-
-
-
-
-#---------------------- FOREST -----------------------
-
 print(dashes,dashes)
+
+
+
+#-----------------------------------------------------------------------------------------------------------
+#------------------------------                                       --------------------------------------
+#------------------------------              RANDOM FOREST             --------------------------------------
+#------------------------------                                        --------------------------------------
+#-----------------------------------------------------------------------------------------------------------
+
+
+
+
+
 from sklearn.ensemble import RandomForestRegressor
 paragrid_rf = {'n_estimators': [100,150,200,250,300,350,400]}
 from sklearn.model_selection import GridSearchCV
@@ -452,7 +472,8 @@ from sklearn.model_selection import GridSearchCV
 gscv_rf = GridSearchCV(estimator = RandomForestRegressor(), param_grid = paragrid_rf, cv = 5,verbose = True)
 
 
-
+# Set number of estimators and depth 
+# Τις χρησιμοποιόυμε σε >1 σημεία οπότε τα έβαλα σε μεταβλητές
 estimators = 40
 depth = 20
 
@@ -460,30 +481,43 @@ depth = 20
 
 prediction_data = ("e:",estimators,"d:",depth)
 print(prediction_data)
-rfr = RandomForestRegressor(n_estimators = estimators,max_depth=depth)        
-print("debug1")
+rfr = RandomForestRegressor(n_estimators = estimators,max_depth=depth)    
+
+# Δεν έχει κολήσει απλά θέλει το χρόνο του    
+print("Loading...")
 
 y_pred_train = rfr.fit(X_train,y_train)
 y_pred=rfr.predict(X_test)
 predict_rfr = rfr.predict(X_test)
 
-print("debug")
+print(dashes)
 print(pd.DataFrame({'Actual': y_test,'Predicted' : predict_rfr}))
+print(dashes)
 
 
-""" print('Train DT MAE : ', mean_absolute_error(y_train, y_pred_train).round(2))
+
+#print('Train DT MAE : ', mean_absolute_error(y_train, y_pred_train).round(2))
 print('Test  DT MAE : ', mean_absolute_error(y_test, predict_rfr).round(2))
-print('Train DT RMSE : ', np.sqrt(mean_squared_error(y_train, y_pred_train)).round(2))
-print('Test  DT RMSE : ', np.sqrt(mean_squared_error(y_test, predict_rfr)).round(2)) """
+#print('Train DT RMSE : ', np.sqrt(mean_squared_error(y_train, y_pred_train)).round(2))
+print('Test  DT RMSE : ', np.sqrt(mean_squared_error(y_test, predict_rfr)).round(2)) 
 
 forest = ('Acc:', np.round(rfr.score(X_test, y_test) * 100, 2))
 print(forest)
 
 
+
+
+# Σε αυτό το σημείο θέλουμε να ελέγξουμε την επεκταστιμότητα του αλγοριθμου πάνω σε ένα dataset στο οποίο δεν έχει εκπαιδευτεί, δηλαδή το dataset test.csv
+predict_test = rfr.predict(X2_test)
+forest_test = ('Acc:', np.round(rfr.score(X2_test, y2_test) * 100, 2))
+print(forest_test,"-> for train_data")
+
+
+
+
+# Για την εκτύπωση των αποτελεσμάτων στo forest_evaluation.txt
+""" 
 import sys
-
-print(forest)
-
-
-with open("forest_predictions.txt", "a") as text_file:
-    print(prediction_data,forest, file=text_file)
+with open("forest_evaluation.txt", "a") as text_file:
+    print(prediction_data,forest, file=text_file) 
+"""
