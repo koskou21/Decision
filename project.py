@@ -228,18 +228,19 @@ print("NotHoliday: ", count2)
 # Πριν προχωρίσουμε 
 
 
-
-corr = all_data.corr()
 """ 
+corr = all_data.corr()
+
 plt.figure(figsize = (15, 10))
 sns.heatmap(corr, annot = True, cmap="RdBu")
-plt.show() """ 
+plt.show()  """
 
 
 
 
 
 #Με τη βοήθεια του heatmap βλέπουμε ότι δεν αντιμετοπίζουμε τέτοια προβλήματα
+
 #corr.to_csv('corelation.csv')  #δεν θα το ξαναχρειαστούμε μάλλον αλλά το αφήνω 
 
 # Ένα άλλο πρόβλημα που μπορεί να αντιμετοπίσουμε είναι να έχουμε αρνητικές τιμές στην μεταβλητή y που θέλουμε να προβλέψουμε
@@ -293,6 +294,12 @@ test_data["Days2Christmas"] = (pd.to_datetime(test_data['Year'].astype(str) + "-
 
 
 
+corr = all_data.corr()
+
+#Show heatmap after days2christmas
+""" plt.figure(figsize = (15, 10))
+sns.heatmap(corr, annot = True, cmap="RdBu")
+plt.show()  """
 
 print(dashes,dashes)
 print(all_data.head())
@@ -311,6 +318,10 @@ print(test_data.head())
 #-------------------------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------------------------
 
+#KSANAFTIAKSE HEATMAP GIA TO DAYS2CHRISTMAS!!!
+#KSANAFTIAKSE HEATMAP GIA TO DAYS2CHRISTMAS!!!
+#KSANAFTIAKSE HEATMAP GIA TO DAYS2CHRISTMAS!!!
+#KSANAFTIAKSE HEATMAP GIA TO DAYS2CHRISTMAS!!!
 
 
 # entopisa ena problhma poy den tha mas afhsei na kanoume linear regression
@@ -324,10 +335,11 @@ print(test_data.head())
 
 
 
-select_columns = all_data.columns.difference(['Weekly_Sales', 'Date'])
+select_columns = all_data.columns.difference(['Weekly_Sales', 'Date', 'Unemployment', 'Temperature'])
 
 print(dashes,'check',dashes)
-print(all_data.head())
+
+print(all_data[select_columns].head())
 
 
 
@@ -419,4 +431,59 @@ print('Linear Regression Accuracy : ', accuracy )
 
 
 
+import sklearn.metrics as sm
+print("Mean absolute error =", round(sm.mean_absolute_error(y_test, y_test_pred), 2)) 
+print("Mean squared error =", round(sm.mean_squared_error(y_test, y_test_pred), 2)) 
+print("Median absolute error =", round(sm.median_absolute_error(y_test, y_test_pred), 2)) 
+print("Explain variance score =", round(sm.explained_variance_score(y_test, y_test_pred), 2)) 
+print("R2 score =", round(sm.r2_score(y_test, y_test_pred), 2))
 
+
+
+
+#---------------------- FOREST -----------------------
+
+print(dashes,dashes)
+from sklearn.ensemble import RandomForestRegressor
+paragrid_rf = {'n_estimators': [100,150,200,250,300,350,400]}
+from sklearn.model_selection import GridSearchCV
+
+
+gscv_rf = GridSearchCV(estimator = RandomForestRegressor(), param_grid = paragrid_rf, cv = 5,verbose = True)
+
+
+
+estimators = 240
+depth = 100
+
+
+
+prediction_data = ("e:",estimators,"d:",depth)
+print(prediction_data)
+rfr = RandomForestRegressor(n_estimators = estimators,max_depth=depth)        
+print("debug1")
+
+y_pred_train = rfr.fit(X_train,y_train)
+y_pred=rfr.predict(X_test)
+predict_rfr = rfr.predict(X_test)
+
+print("debug")
+print(pd.DataFrame({'Actual': y_test,'Predicted' : predict_rfr}))
+
+
+""" print('Train DT MAE : ', mean_absolute_error(y_train, y_pred_train).round(2))
+print('Test  DT MAE : ', mean_absolute_error(y_test, predict_rfr).round(2))
+print('Train DT RMSE : ', np.sqrt(mean_squared_error(y_train, y_pred_train)).round(2))
+print('Test  DT RMSE : ', np.sqrt(mean_squared_error(y_test, predict_rfr)).round(2)) """
+
+forest = ('Acc:', np.round(rfr.score(X_test, y_test) * 100, 2))
+print(forest)
+
+
+import sys
+
+print(forest)
+
+
+with open("forest_predictions.txt", "a") as text_file:
+    print(prediction_data,forest, file=text_file)
