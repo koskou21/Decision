@@ -374,85 +374,64 @@ y2_test = test_data['Weekly_Sales']
 #---------------------------                                 --------------------------------------
 #--------------------------------------------------------------------------------------------------
 
-
-
-
-
-
-
-print('debug')
-
-print(dashes,dashes)
-print(X_train)
-print(dashes,dashes)
-
-print(dashes,dashes)
-
-print(X_test)
-
-
-
+print(dashes,"LinearRegression",dashes)
 
 from sklearn.linear_model import LinearRegression
 
-# Checking errors
+# Για την αξιολόγιση του μοντέλου
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_squared_error
 
-# Initialize and fit the data into the model
+# Αρχικοποίηση και εκπαίδευση του μοντέλου 
 linreg = LinearRegression()
 linreg.fit(X_train, y_train)
+
+# Η y_train_pred περιέχει την πρόβλεψή μας με βάση το X_train
 y_train_pred = linreg.predict( X_train )
-print(dashes,'print pred',dashes)
-
-print(y_train_pred)
 
 
 
-#Predicting for test
+
+# H y_test_pred περιέχει την πρόβλεψή μας με βάση το X_test
 y_test_pred = linreg.predict( X_test )
 
+# Οπτικοποίηση της σύγκρισης μεταξύ του y_test, δηλαδή τις πραγματικές τιμές και του y_test_pred, δηλαδή τις τιμές που προβλέψαμε
 all_data_test_pred = pd.DataFrame({'actual' : y_test,'Predicted' : y_test_pred})
 print(dashes,'all_data pred',dashes)
-
 print(all_data_test_pred.head(10))
+print(dashes,dashes) 
 
-print(dashes,dashes)
 
-
-# Calculating Mean Absoluate Error
-print(dashes,dashes)
-
+# Υπολογισμός του Mean Absoluate Error για τα train + test
 print('Train MAE : ', mean_absolute_error(y_train, y_train_pred).round(2))
-print('Test MAE  : ', mean_absolute_error(y_test, y_test_pred).round(2))
-
-# Calculate Root Mean Squared Error
+#print('Test MAE  : ', mean_absolute_error(y_test, y_test_pred).round(2))
 print(dashes,dashes)
 
+# Υπολογισμός του Root Mean Squared Error για τα train + test
 print('Train RMSE : ', np.sqrt(mean_squared_error(y_train, y_train_pred)).round(2))
-print('Test  RMSE : ', np.sqrt(mean_squared_error(y_test, y_test_pred)).round(2))
-
-accuracy = np.round(linreg.score( X_test, y_test) * 100, 2)
+#print('Test  RMSE : ', np.sqrt(mean_squared_error(y_test, y_test_pred)).round(2))
 print(dashes,dashes)
 
+# Υπολογισμός της ακρίβειας του μοντέλου μας με τη χρήση του linreg.score
+# Για το all_data...
+accuracy = np.round(linreg.score( X_test, y_test) * 100, 3)          #,3 για 3 δεκαδικά ψηφία
 print('Linear Regression Accuracy : ', accuracy )
-
-
-
-
-
-
-
-
-import sklearn.metrics as sm
-print("Mean absolute error =", round(sm.mean_absolute_error(y_test, y_test_pred), 2)) 
-print("Mean squared error =", round(sm.mean_squared_error(y_test, y_test_pred), 2)) 
-print("Median absolute error =", round(sm.median_absolute_error(y_test, y_test_pred), 2)) 
-print("Explain variance score =", round(sm.explained_variance_score(y_test, y_test_pred), 2)) 
-print("R2 score =", round(sm.r2_score(y_test, y_test_pred), 2))
 print(dashes,dashes)
 
 
+
+# Και για το all_data
+# Για να δούμε αν το μοντέλο μας είναι επεκτάσιμο σε ένα dataset πανω στο οποίο δεν εκπαιδεύτηκε 
+y_test_pred = linreg.predict( X2_test )
+accuracy = np.round(linreg.score( X2_test, y2_test) * 100, 3)
+print('Linear Regression Accuracy (test_data) : ', accuracy)
+
+
+
+# Σε αυτό το σημείο βλέπουμε ότι η πρόβλεψή μας με αυτό το μοντέλο είναι πολύ κακή
+# Συγκεκριμένα από τη σελίδα https://scikit-learn.org/ για τη γραμμική παλινδόμιση βλέπουμε 
+# quote: The best possible score is 1.0 (ή στην περίπτωσή μας 1*100=100 ή 100%)
+# Εμείς έχουμε score περίπου 3% που σημαίνει ότι το Linear Regression δεν είναι κατάλληλο για την περίπτωσή μας 
 
 #-----------------------------------------------------------------------------------------------------------
 #------------------------------                                       --------------------------------------
@@ -463,17 +442,14 @@ print(dashes,dashes)
 
 
 
-
+print(dashes,"RandomForestRegression",dashes)
 from sklearn.ensemble import RandomForestRegressor
-paragrid_rf = {'n_estimators': [100,150,200,250,300,350,400]}
-from sklearn.model_selection import GridSearchCV
 
-
-gscv_rf = GridSearchCV(estimator = RandomForestRegressor(), param_grid = paragrid_rf, cv = 5,verbose = True)
 
 
 # Set number of estimators and depth 
 # Τις χρησιμοποιόυμε σε >1 σημεία οπότε τα έβαλα σε μεταβλητές
+# Βρήκαμε, μετά από πολλές δοκιμές, ότι η καταλληλότερες τιμές από άποψη ακρίβειας και ταχύτητας είναι estimators = 40, depth = 20
 estimators = 40
 depth = 20
 
@@ -481,26 +457,33 @@ depth = 20
 
 prediction_data = ("e:",estimators,"d:",depth)
 print(prediction_data)
+
+# Χτίζουμε το μοντέλο μας
 rfr = RandomForestRegressor(n_estimators = estimators,max_depth=depth)    
 
-# Δεν έχει κολήσει απλά θέλει το χρόνο του    
+# Δεν έχει κολήσει απλά θέλει το χρόνο του ιδιαίτερα για μεγαλύτερους αριθμούς estimatos + depth
 print("Loading...")
 
+# Εκπαίδευση του μοντέλου που χτίσαμε 
 y_pred_train = rfr.fit(X_train,y_train)
-y_pred=rfr.predict(X_test)
+
+
+# Πρόβλεψη για X_test
 predict_rfr = rfr.predict(X_test)
+
 
 print(dashes)
 print(pd.DataFrame({'Actual': y_test,'Predicted' : predict_rfr}))
 print(dashes)
 
 
-
-#print('Train DT MAE : ', mean_absolute_error(y_train, y_pred_train).round(2))
+# Mean Absolute Error + Mean Squared Error
 print('Test  DT MAE : ', mean_absolute_error(y_test, predict_rfr).round(2))
-#print('Train DT RMSE : ', np.sqrt(mean_squared_error(y_train, y_pred_train)).round(2))
 print('Test  DT RMSE : ', np.sqrt(mean_squared_error(y_test, predict_rfr)).round(2)) 
 
+
+
+# Υπολογισμός του score της πρόβλεψης/μοντέλου
 forest = ('Acc:', np.round(rfr.score(X_test, y_test) * 100, 2))
 print(forest)
 
@@ -508,16 +491,23 @@ print(forest)
 
 
 # Σε αυτό το σημείο θέλουμε να ελέγξουμε την επεκταστιμότητα του αλγοριθμου πάνω σε ένα dataset στο οποίο δεν έχει εκπαιδευτεί, δηλαδή το dataset test.csv
+
+# Πρόβλεψη για X2_test
 predict_test = rfr.predict(X2_test)
+# Score πρόβλεψης X2_test/test_data
 forest_test = ('Acc:', np.round(rfr.score(X2_test, y2_test) * 100, 2))
-print(forest_test,"-> for train_data")
+print(forest_test,"-> for test_data")
 
 
 
 
-# Για την εκτύπωση των αποτελεσμάτων στo forest_evaluation.txt
-""" 
+""" # Για την εκτύπωση των αποτελεσμάτων στo forest_evaluation.txt
 import sys
 with open("forest_evaluation.txt", "a") as text_file:
-    print(prediction_data,forest, file=text_file) 
-"""
+    print(prediction_data,forest, file=text_file)  """
+
+
+
+# Όπως και στο .score του linear regression, η καλύτερη δυνατή τιμή είναι 1 ή 100% 
+# Όπως θα δείτε και στο αρχείο forest_evaluation που δημιουργήσαμε, είχαμε προβλέψεις ~96% για το all_data και ~97% για το test_data. 
+# Αυτό σημαίνει ότι το μοντέλο που κατασκευάσαμε κάνει αρκετά καλές προβλέψεις και είναι επεκτάσιμο.
