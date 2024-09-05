@@ -13,6 +13,3 @@ Commit and push your changes to your GitHub repository in VScode
 
 https://zeroesandones.medium.com/how-to-commit-and-push-your-changes-to-your-github-repository-in-vscode-77a7a3d7dd02
 
-
-
-Αμα αλλάξετε ήδη υπάρχοντα αρχεία φτιάξτε ενα καινούργιο branch (μην κανετε push στο main αν δεν είστε σίγουροι τι κάνετε)
